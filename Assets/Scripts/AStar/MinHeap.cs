@@ -97,18 +97,12 @@ public class MinHeap<T> where T : IComparable<T>
         {
             int left = ((position << 1) + 1);
             int right = left + 1;
-            int minPosition;
+            int minPosition = position;
 
             if (left < Count && array[left].CompareTo(array[position]) < 0)
             {
                 minPosition = left;
-            }
-            else
-            {
-                minPosition = position;
-            }
-
-            if (right < Count && array[right].CompareTo(array[minPosition]) < 0)
+            } else if (right < Count && array[right].CompareTo(array[minPosition]) < 0)
             {
                 minPosition = right;
             }
@@ -119,9 +113,7 @@ public class MinHeap<T> where T : IComparable<T>
                 array[position] = array[minPosition];
                 array[minPosition] = mheap;
                 position = minPosition;
-            }
-            else
-            {
+            } else {
                 return;
             }
 

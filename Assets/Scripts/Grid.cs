@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public enum Direction
@@ -31,6 +32,7 @@ public class Grid : MonoBehaviour
 
     public const float UnitSize = 1f;
     private GameObject Player;
+    private List<BreadCrumb> BreadCrumbs = new List<BreadCrumb>();
 
     void Awake()
     {
@@ -301,24 +303,27 @@ public class Grid : MonoBehaviour
                     Point playerPos = WorldToGrid(Player.transform.position);
 
                     //Find path from player to clicked position
-                    BreadCrumb bc = PathFinder.FindPath(this, playerPos, gridPos);
+                    BreadCrumbs = PathFinder.FindPath(this, playerPos, gridPos);
 
-                    //Draw out our path
-                    List<Vector2> points = new List<Vector2>();
-                    while (bc != null)
-                    {
-                        points.Add(GridToWorld(bc.position));
-                        
-                        bc = bc.next;
-                    }
-                    DrawPath(points);
+                    DrawPath(BreadCrumbs);
                 }
             }
         }
     }
 
+    private void OnGUI() {
+        if (Application.isEditor) {
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = Color.red; 
+            foreach (var bc in BreadCrumbs) {
+                var pos = GridToWorld(bc.position);
+                
+                Handles.Label(pos, bc.cost.ToString(), style);
+            }
+        }
+    }
 
-    private void DrawPath(List<Vector2> points)
+    private void DrawPath(List<BreadCrumb> points)
     {
         LineRenderer lr = Player.GetComponent<LineRenderer>();
         lr.positionCount = points.Count;  //Need a higher number than 2, or crashes out
@@ -329,7 +334,7 @@ public class Grid : MonoBehaviour
 
         for (int i = 0; i < points.Count; i++)
         {
-            lr.SetPosition(i, points[i]);
+            lr.SetPosition(i, GridToWorld(points[i].position));
         }
     }
 
@@ -357,6 +362,7 @@ public class Grid : MonoBehaviour
                     Gizmos.color = Color.yellow;
                 }
                 Gizmos.DrawSphere(node.Position, 0.1f);
+                
 
             }
         }

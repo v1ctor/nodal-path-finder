@@ -1,36 +1,19 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public static class PathFinder
 {
-    public static BreadCrumb FindPath(Grid world, Point start, Point end)
+    public static List<BreadCrumb> FindPath(Grid world, Point start, Point end)
     {
         BreadCrumb bc = FindPathReversed(world, start, end);
         BreadCrumb[] temp = new BreadCrumb[256];
-
-        if (bc != null)
+        List<BreadCrumb> breadCrumbs = new List<BreadCrumb>();
+        while (bc != null)
         {
-            int index = 0;
-            while (bc != null)
-            {
-                temp[index] = bc;
-                bc = bc.next;
-                index++;
-            }
-
-            index -= 2;
-
-            BreadCrumb current = new BreadCrumb(start);
-            BreadCrumb head = current;
-
-            while (index >= 0)
-            {
-                current.next = new BreadCrumb(temp[index].position);
-                current = current.next;
-                index--;
-            }
-            return head;
+            breadCrumbs.Add(bc);
+            bc = bc.next;
         }
-        return null;
+        return breadCrumbs;
     }
 
     private static BreadCrumb FindPathReversed(Grid world, Point start, Point end)
@@ -39,8 +22,6 @@ public static class PathFinder
         BreadCrumb[,] brWorld = new BreadCrumb[world.Right, world.Top];
         BreadCrumb node;
         Point tmp;
-        int cost;
-        int diff;
 
         BreadCrumb current = new BreadCrumb(start);
         current.cost = 0;
@@ -77,18 +58,10 @@ public static class PathFinder
                 //If the node is not on the 'closedList' check it's new score, keep the best
                 if (!node.onClosedList)
                 {
-                    diff = 0;
-                    if (current.position.X != node.position.X)
-                    {
-                        diff += 1;
-                    }
-                    if (current.position.Y != node.position.Y)
-                    {
-                        diff += 1;
-                    }
-
-                    int distance = (int)Mathf.Pow(Mathf.Max(Mathf.Abs(end.X - node.position.X), Mathf.Abs(end.Y - node.position.Y)), 2);
-                    cost = current.cost + diff + distance;
+                    //TODO we can get cost from the direction. It can be precomputed once
+                    //FIXME drop of the decimal part of the float, can be a precision drop
+                    float distance = Mathf.Sqrt(Mathf.Pow(end.X - node.position.X, 2) + Mathf.Pow(end.Y - node.position.Y, 2));
+                    float cost = current.cost + distance;
 
                     if (cost < node.cost)
                     {

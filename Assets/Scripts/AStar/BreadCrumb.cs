@@ -5,7 +5,7 @@ public class BreadCrumb : IComparable<BreadCrumb>
     public readonly Point position;
     public BreadCrumb prev;
     public BreadCrumb next;
-    public int cost = int.MaxValue;
+    public float cost = float.MaxValue;
     public bool onClosedList;
     public bool onOpenList;
 
