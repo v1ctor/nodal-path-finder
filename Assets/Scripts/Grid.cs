@@ -15,6 +15,8 @@ public enum Direction
 
 public class Grid : MonoBehaviour
 {
+    public LayerMask CollisionMask;
+
     [HideInInspector]
     public int Width;
     [HideInInspector]

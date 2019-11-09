@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class Node
 {
-
     public bool BadNode;
 
     //Grid coordinates
@@ -155,8 +154,8 @@ public class Node
         {
             //Left
             valid = true;
-            hit = Physics2D.Raycast(Position, new Vector2(-1, 0), Grid.UnitSize);
-            if (hit.collider != null && hit.collider.tag == "Wall")
+            hit = Physics2D.Raycast(Position, new Vector2(-1, 0), Grid.UnitSize, grid.CollisionMask);
+            if (hit.collider != null)
             {
                 valid = false;
             }
@@ -166,8 +165,8 @@ public class Node
             if (Y > 0)
             {
                 valid = true;
-                hit = Physics2D.Raycast(Position, new Vector2(-1, 1), diagonalDistance);
-                if (hit.collider != null && hit.collider.tag == "Wall")
+                hit = Physics2D.Raycast(Position, new Vector2(-1, 1), diagonalDistance, grid.CollisionMask);
+                if (hit.collider != null)
                 {
                     valid = false;
                 }
@@ -178,8 +177,8 @@ public class Node
             if (Y < grid.Height - 1)
             {
                 valid = true;
-                hit = Physics2D.Raycast(Position, new Vector2(-1, -1), diagonalDistance);
-                if (hit.collider != null && hit.collider.tag == "Wall")
+                hit = Physics2D.Raycast(Position, new Vector2(-1, -1), diagonalDistance, grid.CollisionMask);
+                if (hit.collider != null)
                 {
                     valid = false;
                 }
@@ -191,8 +190,8 @@ public class Node
         if (X < grid.Right - 2)
         {
             valid = true;
-            hit = Physics2D.Raycast(Position, new Vector2(1, 0), Grid.UnitSize);
-            if (hit.collider != null && hit.collider.tag == "Wall")
+            hit = Physics2D.Raycast(Position, new Vector2(1, 0), Grid.UnitSize, grid.CollisionMask);
+            if (hit.collider != null)
             {
                 valid = false;
             }
@@ -202,8 +201,8 @@ public class Node
             if (Y > 0)
             {
                 valid = true;
-                hit = Physics2D.Raycast(Position, new Vector2(1, 1), diagonalDistance);
-                if (hit.collider != null && hit.collider.tag == "Wall")
+                hit = Physics2D.Raycast(Position, new Vector2(1, 1), diagonalDistance, grid.CollisionMask);
+                if (hit.collider != null)
                 {
                     valid = false;
                 }
@@ -214,8 +213,8 @@ public class Node
             if (Y < grid.Height - 1)
             {
                 valid = true;
-                hit = Physics2D.Raycast(Position, new Vector2(1, -1), diagonalDistance);
-                if (hit.collider != null && hit.collider.tag == "Wall")
+                hit = Physics2D.Raycast(Position, new Vector2(1, -1), diagonalDistance, grid.CollisionMask);
+                if (hit.collider != null)
                 {
                     valid = false;
                 }
@@ -227,8 +226,8 @@ public class Node
         if (Y - 1 > 0)
         {
             valid = true;
-            hit = Physics2D.Raycast(Position, new Vector2(0, 1), Grid.UnitSize);
-            if (hit.collider != null && hit.collider.tag == "Wall")
+            hit = Physics2D.Raycast(Position, new Vector2(0, 1), Grid.UnitSize, grid.CollisionMask);
+            if (hit.collider != null)
             {
                 valid = false;
             }
@@ -239,8 +238,8 @@ public class Node
         if (Y < grid.Height - 2)
         {
             valid = true;
-            hit = Physics2D.Raycast(Position, new Vector2(0, -1), Grid.UnitSize);
-            if (hit.collider != null && hit.collider.tag == "Wall")
+            hit = Physics2D.Raycast(Position, new Vector2(0, -1), Grid.UnitSize, grid.CollisionMask);
+            if (hit.collider != null)
             {
                 valid = false;
             }
