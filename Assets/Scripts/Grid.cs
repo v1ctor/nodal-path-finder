@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum Direction
 {
@@ -31,13 +29,9 @@ public class Grid : MonoBehaviour
     public int Top { get { return Height; } }
 
     public const float UnitSize = 1f;
-    private GameObject Player;
-    private List<BreadCrumb> BreadCrumbs = new List<BreadCrumb>();
 
     void Awake()
     {
-        Player = GameObject.Find("Player");
-
         Width = ((int)transform.localScale.x) * 2 + 2;
         Height = ((int)transform.localScale.y) * 2 + 2;
 
@@ -179,7 +173,7 @@ public class Grid : MonoBehaviour
         return new Point(node.X, node.Y);
     }
 
-    public static Vector2 GridToWorld(Point gridPosition)
+    public Vector2 GridToWorld(Point gridPosition)
     {
         Vector2 world = new Vector2(gridPosition.X / 2f, -(gridPosition.Y / 2f - 0.5f));
 
@@ -283,61 +277,6 @@ public class Grid : MonoBehaviour
         }
     }
 
-
-    void Update()
-    {
-        //Pathfinding demo
-        if (Input.GetMouseButtonDown(0))
-        {
-            //Convert mouse click point to grid coordinates
-            Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Point gridPos = WorldToGrid(worldPos);
-
-            if (gridPos != null)
-            {
-
-                if (gridPos.X > 0 && gridPos.Y > 0 && gridPos.X < Width && gridPos.Y < Height)
-                {
-
-                    //Convert player point to grid coordinates
-                    Point playerPos = WorldToGrid(Player.transform.position);
-
-                    //Find path from player to clicked position
-                    BreadCrumbs = PathFinder.FindPath(this, playerPos, gridPos);
-
-                    DrawPath(BreadCrumbs);
-                }
-            }
-        }
-    }
-
-    private void OnGUI() {
-        if (Application.isEditor) {
-            GUIStyle style = new GUIStyle();
-            style.normal.textColor = Color.red; 
-            foreach (var bc in BreadCrumbs) {
-                var pos = GridToWorld(bc.position);
-                
-                Handles.Label(pos, bc.cost.ToString(), style);
-            }
-        }
-    }
-
-    private void DrawPath(List<BreadCrumb> points)
-    {
-        LineRenderer lr = Player.GetComponent<LineRenderer>();
-        lr.positionCount = points.Count;  //Need a higher number than 2, or crashes out
-        lr.startWidth = 0.1f;
-        lr.endWidth = 0.1f;
-        lr.startColor = Color.yellow;
-        lr.endColor = Color.yellow;
-
-        for (int i = 0; i < points.Count; i++)
-        {
-            lr.SetPosition(i, GridToWorld(points[i].position));
-        }
-    }
-
     private void OnDrawGizmosSelected()
     {
         if (Nodes == null)
@@ -362,8 +301,6 @@ public class Grid : MonoBehaviour
                     Gizmos.color = Color.yellow;
                 }
                 Gizmos.DrawSphere(node.Position, 0.1f);
-                
-
             }
         }
     }
