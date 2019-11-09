@@ -171,6 +171,9 @@ public class Grid : MonoBehaviour
                 }
             }
         }
+        if (node == null) {
+            return null;
+        }
         return new Point(node.X, node.Y);
     }
 
@@ -305,6 +308,7 @@ public class Grid : MonoBehaviour
                     while (bc != null)
                     {
                         points.Add(GridToWorld(bc.position));
+                        
                         bc = bc.next;
                     }
                     DrawPath(points);

@@ -54,34 +54,35 @@ public class Node
     //Cull nodes if they don't have enough valid connection points (3)
     public void CheckConnectionsPass1(Grid grid)
     {
-        if (!BadNode)
+        if (BadNode)
         {
+            return;
+        }
 
-            int clearCount = 0;
+        int clearCount = 0;
 
-            if (Top != null && Top.Valid)
-                clearCount++;
-            if (Bottom != null && Bottom.Valid)
-                clearCount++;
-            if (Left != null && Left.Valid)
-                clearCount++;
-            if (Right != null && Right.Valid)
-                clearCount++;
-            if (TopLeft != null && TopLeft.Valid)
-                clearCount++;
-            if (TopRight != null && TopRight.Valid)
-                clearCount++;
-            if (BottomLeft != null && BottomLeft.Valid)
-                clearCount++;
-            if (BottomRight != null && BottomRight.Valid)
-                clearCount++;
+        if (Top != null && Top.Valid)
+            clearCount++;
+        if (Bottom != null && Bottom.Valid)
+            clearCount++;
+        if (Left != null && Left.Valid)
+            clearCount++;
+        if (Right != null && Right.Valid)
+            clearCount++;
+        if (TopLeft != null && TopLeft.Valid)
+            clearCount++;
+        if (TopRight != null && TopRight.Valid)
+            clearCount++;
+        if (BottomLeft != null && BottomLeft.Valid)
+            clearCount++;
+        if (BottomRight != null && BottomRight.Valid)
+            clearCount++;
 
-            //If not at least 3 valid connection points - disable node
-            if (clearCount < 3)
-            {
-                BadNode = true;
-                DisableConnections();
-            }
+        //If not at least 3 valid connection points - disable node
+        if (clearCount < 3)
+        {
+            BadNode = true;
+            DisableConnections();
         }
     }
 
