@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class Grid : MonoBehaviour
     float nodeDiameter;
     int gridSizeX;
     int gridSizeY;
+
+    public List<Node> path = new List<Node>();
 
     private void Start()
     {
@@ -29,7 +32,7 @@ public class Grid : MonoBehaviour
             {
                 Vector3 worldPoint = bottomLeft + Vector3.right * (i * nodeDiameter + nodeRadius) + Vector3.up * (j * nodeDiameter + nodeRadius);
                 bool walkable = !Physics2D.OverlapBox(worldPoint, Vector2.one * nodeDiameter, 0, unwalkableMask);
-                grid[i, j] = new Node(walkable, worldPoint);
+                grid[i, j] = new Node(walkable, worldPoint, i, j);
             }
         }
     }
@@ -47,6 +50,23 @@ public class Grid : MonoBehaviour
         return grid[x, y];
     }
 
+    public List<Node> GetNeighbours(Node node) {
+        List<Node> neighbours = new List<Node>();
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                if (x == 0 && y == 0) {
+                    continue;
+                }
+                int checkX = node.gridX + x;
+                int checkY = node.gridY + y;
+                if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY) {
+                    neighbours.Add(grid[checkX, checkY]);
+                }
+            }
+        }
+        return neighbours;
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridSize.x, gridSize.y, 1));
@@ -61,6 +81,9 @@ public class Grid : MonoBehaviour
                 else
                 {
                     Gizmos.color = Color.red;
+                }
+                if (path.Contains(node)) {
+                    Gizmos.color = Color.black;
                 }
                 Gizmos.DrawCube(node.position, Vector3.one * (nodeDiameter - 0.1f));
             }
