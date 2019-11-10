@@ -18,15 +18,16 @@ public class PathRequestManager : MonoBehaviour
         pathFinder = GetComponent<PathFinder>();  
     }
 
-    public void FinishProcessingPath(Vector2[] points, bool result) {
-        currentPathRequest.callback(points, result);
-        TryProcessNext();
-    }
-
     public static void RequestPath(Vector2 pathStart, Vector2 pathEnd, Action<Vector2[], bool> pathCallback) {
         PathRequest pathRequest = new PathRequest(pathStart, pathEnd, pathCallback);
         instance.pathRequests.Enqueue(pathRequest);
         instance.TryProcessNext();
+    }
+
+    public void FinishProcessingPath(Vector2[] points, bool result) {
+        currentPathRequest.callback(points, result);
+        isProcessingPath = false;
+        TryProcessNext();
     }
 
     private void TryProcessNext()
