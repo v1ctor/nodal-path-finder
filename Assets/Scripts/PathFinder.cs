@@ -21,6 +21,8 @@ public class PathFinder : MonoBehaviour
 
     IEnumerator FindPath(Vector2 startPos, Vector2 endPos)
     {
+        //FIXME if endPos isn't walkable we don't call back to 
+        // the result callback and pathrequest finder cannot find a next route
         Stopwatch sw = new Stopwatch();
         sw.Start();
 
