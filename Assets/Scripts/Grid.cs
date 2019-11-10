@@ -6,16 +6,22 @@ public class Grid : MonoBehaviour
     public LayerMask unwalkableMask;
     public Vector2 gridSize;
     public float nodeRadius;
+    public bool displayGrid;
     Node[,] grid;
 
     float nodeDiameter;
     int gridSizeX;
     int gridSizeY;
 
-    public List<Node> path = new List<Node>();
-
-    private void Start()
+    public int MaxSize
     {
+        get
+        {
+            return gridSizeX * gridSizeY;
+        }
+    }
+
+    private void Awake() {
         nodeDiameter = nodeRadius * 2;
         gridSizeX = Mathf.RoundToInt(gridSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridSize.y / nodeDiameter);
@@ -50,16 +56,21 @@ public class Grid : MonoBehaviour
         return grid[x, y];
     }
 
-    public List<Node> GetNeighbours(Node node) {
+    public List<Node> GetNeighbours(Node node)
+    {
         List<Node> neighbours = new List<Node>();
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
-                if (x == 0 && y == 0) {
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                if (x == 0 && y == 0)
+                {
                     continue;
                 }
                 int checkX = node.gridX + x;
                 int checkY = node.gridY + y;
-                if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY) {
+                if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
+                {
                     neighbours.Add(grid[checkX, checkY]);
                 }
             }
@@ -70,7 +81,7 @@ public class Grid : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridSize.x, gridSize.y, 1));
-        if (grid != null)
+        if (grid != null && displayGrid)
         {
             foreach (Node node in grid)
             {
@@ -81,9 +92,6 @@ public class Grid : MonoBehaviour
                 else
                 {
                     Gizmos.color = Color.red;
-                }
-                if (path.Contains(node)) {
-                    Gizmos.color = Color.black;
                 }
                 Gizmos.DrawCube(node.position, Vector3.one * (nodeDiameter - 0.1f));
             }
