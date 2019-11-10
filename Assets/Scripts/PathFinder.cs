@@ -21,60 +21,68 @@ public class PathFinder : MonoBehaviour
 
     IEnumerator FindPath(Vector2 startPos, Vector2 endPos)
     {
-        //FIXME if endPos isn't walkable we don't call back to 
-        // the result callback and pathrequest finder cannot find a next route
         Stopwatch sw = new Stopwatch();
         sw.Start();
 
         bool passSuccess = false;
         Node startNode = grid.GetNodeFromWorldPoint(startPos);
         Node endNode = grid.GetNodeFromWorldPoint(endPos);
-
-        Heap<Node> openQueue = new Heap<Node>(grid.MaxSize);
-        HashSet<Node> closedSet = new HashSet<Node>();
-
-        openQueue.Add(startNode);
-
-        while (openQueue.Count > 0)
+        //TODO create a way for the unit to go as close to the no walkable node as possilbe
+        if (startNode.walkable && endNode.walkable)
         {
-            Node currentNode = openQueue.RemoveFirst();
-            closedSet.Add(currentNode);
+            Heap<Node> openQueue = new Heap<Node>(grid.MaxSize);
+            HashSet<Node> closedSet = new HashSet<Node>();
 
-            if (currentNode == endNode)
-            {
-                sw.Stop();
-                UnityEngine.Debug.Log("Path found " + sw.ElapsedMilliseconds + " ms");
-                passSuccess = true;
-            }
+            openQueue.Add(startNode);
 
-            foreach (Node neighbour in grid.GetNeighbours(currentNode))
+            while (openQueue.Count > 0)
             {
-                if (!neighbour.walkable || closedSet.Contains(neighbour))
+                Node currentNode = openQueue.RemoveFirst();
+                closedSet.Add(currentNode);
+
+                if (currentNode == endNode)
                 {
-                    continue;
+                    passSuccess = true;
+                    break;
                 }
 
-                int newCost = currentNode.gCost + GetDistance(currentNode, neighbour);
-                if (newCost < neighbour.gCost || !openQueue.Contains(neighbour))
+                foreach (Node neighbour in grid.GetNeighbours(currentNode))
                 {
-                    neighbour.gCost = newCost;
-                    neighbour.hCost = GetDistance(neighbour, endNode);
-                    neighbour.parent = currentNode;
-
-                    if (!openQueue.Contains(neighbour))
+                    if (!neighbour.walkable || closedSet.Contains(neighbour))
                     {
-                        openQueue.Add(neighbour);
+                        continue;
                     }
-                }
 
+                    int newCost = currentNode.gCost + GetDistance(currentNode, neighbour);
+                    if (newCost < neighbour.gCost || !openQueue.Contains(neighbour))
+                    {
+                        neighbour.gCost = newCost;
+                        neighbour.hCost = GetDistance(neighbour, endNode);
+                        neighbour.parent = currentNode;
+
+                        if (!openQueue.Contains(neighbour))
+                        {
+                            openQueue.Add(neighbour);
+                        }
+                    }
+
+                }
+                closedSet.Add(currentNode);
             }
-            closedSet.Add(currentNode);
         }
         yield return null;
+        sw.Stop();
         if (passSuccess)
         {
+            UnityEngine.Debug.Log("Path found " + sw.ElapsedMilliseconds + " ms");
             var points = RetracePath(startNode, endNode);
             requestManager.FinishProcessingPath(points, true);
+        }
+        else
+        {
+            UnityEngine.Debug.Log("Path not found " + sw.ElapsedMilliseconds + " ms");
+            //TODO improve API
+            requestManager.FinishProcessingPath(new Vector2[0], false);
         }
 
     }

@@ -43,8 +43,6 @@ public class PathRequestManager : MonoBehaviour
         }
     }
 
-
-
     struct PathRequest
     {
         public Vector2 pathStart;
