@@ -10,25 +10,31 @@ public class Unit : MonoBehaviour
     Vector2[] path;
     int targetIndex;
 
-    void Start() {
-        PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);    
+    void Start()
+    {
+        PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
     }
 
     private void OnPathFound(Vector2[] points, bool sucess)
     {
-        if (sucess) {
+        if (sucess)
+        {
             path = points;
             StopCoroutine("FollowPass");
             StartCoroutine("FollowPass");
         }
     }
 
-    IEnumerator FollowPass() {
+    IEnumerator FollowPass()
+    {
         Vector3 currentPoint = path[0];
-        while (true) {
-            if (transform.position == currentPoint) {
+        while (true)
+        {
+            if (transform.position == currentPoint)
+            {
                 targetIndex++;
-                if (targetIndex >= path.Length) {
+                if (targetIndex >= path.Length)
+                {
                     yield break;
                 }
                 currentPoint = path[targetIndex];
@@ -38,14 +44,20 @@ public class Unit : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos() {
-        if (path != null) {
-            for (int i = targetIndex; i < path.Length; i++) {
+    private void OnDrawGizmos()
+    {
+        if (path != null)
+        {
+            for (int i = targetIndex; i < path.Length; i++)
+            {
                 Gizmos.color = Color.black;
                 Gizmos.DrawCube(path[i], Vector3.one);
-                if (i == targetIndex) {
+                if (i == targetIndex)
+                {
                     Gizmos.DrawLine(transform.position, path[i]);
-                } else {
+                }
+                else
+                {
                     Gizmos.DrawLine(path[i - 1], path[i]);
                 }
             }
