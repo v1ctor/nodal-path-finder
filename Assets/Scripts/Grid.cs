@@ -68,7 +68,10 @@ public class Grid : MonoBehaviour
         {
             for (int y = 0; y < Height; y++)
             {
-                if (Nodes[x, y] == null) continue;
+                if (Nodes[x, y] == null) 
+                {
+                    continue;
+                }
                 Nodes[x, y].InitializeConnections(this);
             }
         }
@@ -79,7 +82,9 @@ public class Grid : MonoBehaviour
             for (int y = 0; y < Height; y++)
             {
                 if (Nodes[x, y] == null)
+                {
                     continue;
+                }
 
                 Nodes[x, y].CheckConnectionsPass1(this);
             }
