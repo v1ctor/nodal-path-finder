@@ -63,6 +63,8 @@ public class PathFinder : MonoBehaviour
                         if (!openQueue.Contains(neighbour))
                         {
                             openQueue.Add(neighbour);
+                        } else {
+                            openQueue.UpdateItem(neighbour);
                         }
                     }
 

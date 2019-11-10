@@ -33,20 +33,23 @@ public class Player : MonoBehaviour
 
     IEnumerator FollowPass()
     {
-        Vector3 currentPoint = path[0];
-        while (true)
+        if (path.Length > 0)
         {
-            if (transform.position == currentPoint)
+            Vector3 currentPoint = path[0];
+            while (true)
             {
-                targetIndex++;
-                if (targetIndex >= path.Length)
+                if (transform.position == currentPoint)
                 {
-                    yield break;
+                    targetIndex++;
+                    if (targetIndex >= path.Length)
+                    {
+                        yield break;
+                    }
+                    currentPoint = path[targetIndex];
                 }
-                currentPoint = path[targetIndex];
+                transform.position = Vector3.MoveTowards(transform.position, currentPoint, speed * Time.deltaTime);
+                yield return null;
             }
-            transform.position = Vector3.MoveTowards(transform.position, currentPoint, speed * Time.deltaTime);
-            yield return null;
         }
     }
 
