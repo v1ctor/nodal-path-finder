@@ -13,6 +13,7 @@ public class Grid : MonoBehaviour
     int gridSizeX;
     int gridSizeY;
 
+    // TODO this is required only because heap isn't dynamically allocated
     public int MaxSize
     {
         get

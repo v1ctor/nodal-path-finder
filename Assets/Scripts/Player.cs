@@ -3,21 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//TODO copypasta of a unit
-public class Player : MonoBehaviour
+public class Unit : MonoBehaviour
 {
+    public Transform target;
     public float speed = 5f;
-    private Vector2[] path;
-    private int targetIndex;
+    Vector2[] path;
+    int targetIndex;
 
-    private void Update()
+    void Start()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            // TODO not sure about requesting camera this way, might be not optimal
-            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            PathRequestManager.RequestPath(transform.position, pos, OnPathFound);
-        }
+        PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
     }
 
     private void OnPathFound(Vector2[] points, bool sucess)
