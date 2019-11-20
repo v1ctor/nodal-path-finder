@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
+
+    const float pathUpdateMoveThreshold = .5f;
+    const float minPassUpdateTime = .2f;
+
     public Transform target;
     public float speed = 5f;
     public float turnSpeed = 3f;
@@ -26,6 +30,23 @@ public class Unit : MonoBehaviour
         }
     }
 
+    IEnumerator UpdatePath() {
+        if (Time.timeSinceLevelLoad < .3f) {
+            yield return new WaitForSeconds(.3f);
+        }
+        PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+        
+        float sqrMoveThreshold = pathUpdateMoveThreshold * pathUpdateMoveThreshold;
+        Vector3 targetPosOld = target.position;
+        while (true) {
+            yield return new WaitForSeconds(minPassUpdateTime);
+            if ((target.position - targetPosOld).sqrMagnitude > sqrMoveThreshold) {
+                PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+                targetPosOld = target.position;
+            }
+        }
+    }
+
     IEnumerator FollowPass()
     {
         bool followingPath = true;
@@ -33,9 +54,10 @@ public class Unit : MonoBehaviour
         transform.LookAt(path.lookPoints[0]);
         while (followingPath)
         {
-            if (path.turnBoundaries[pathIndex].HasCrossedLine(transform.position)) {
+            while (path.turnBoundaries[pathIndex].HasCrossedLine(transform.position)) {
                 if (pathIndex == path.finishLineIndex) {
                     followingPath = false;
+                    break;
                 } else {
                     pathIndex++;
                 }
