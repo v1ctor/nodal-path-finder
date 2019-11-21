@@ -1,0 +1,17 @@
+{
+  "name": "org.buldakov.pathfinder",
+  "version": "1.0.0",
+  "displayName": "Path Finder",
+  "description": "2D grid based path finder",
+  "unity": "2019.1",
+  "unityRelease": "0b5",
+  "dependencies": {
+ },
+ "keywords": [
+  ],
+  "author": {
+    "name": "Victor Buldakov",
+    "email": "victor@buldakov.org",
+    "url": "buldakov.org"
+  }
+}
