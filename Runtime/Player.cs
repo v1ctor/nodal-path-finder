@@ -1,14 +1,18 @@
 ﻿using UnityEngine;
 
-public class Player : PathFollower
+namespace PathFinder
 {
-    private void Update()
+
+    public class Player : PathFollower
     {
-        if (Input.GetMouseButtonDown(0))
+        private void Update()
         {
-            // TODO not sure about requesting camera this way, might be not optimal
-            var targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RequestPath(targetPosition);
+            if (Input.GetMouseButtonDown(0))
+            {
+                // TODO not sure about requesting camera this way, might be not optimal
+                var targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RequestPath(targetPosition);
+            }
         }
     }
 }

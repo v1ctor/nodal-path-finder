@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 
-public class Unit : PathFollower
+namespace PathFinder
 {
-    public Transform target;
-    
-    private void Start() {
-        RequestPath(target.position);
+
+    public class Unit : PathFollower
+    {
+        public Transform target;
+
+        private void Start()
+        {
+            RequestPath(target.position);
+        }
     }
 }

@@ -1,61 +1,66 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public abstract class PathFollower : MonoBehaviour
+namespace PathFinder
 {
-    public float speed = 5f;
-    Vector2[] path;
-    int targetIndex;
 
-    protected void RequestPath(Vector2 target) {
-        PathRequestManager.RequestPath(transform.position, target, OnPathFound);
-    }
-
-    private void OnPathFound(Vector2[] points, bool sucess)
+    public abstract class PathFollower : MonoBehaviour
     {
-        if (sucess)
+        public float speed = 5f;
+        Vector2[] path;
+        int targetIndex;
+
+        protected void RequestPath(Vector2 target)
         {
-            StopCoroutine("FollowPass");
-            path = points;
-            targetIndex = 0;
-            StartCoroutine("FollowPass");
+            PathRequestManager.RequestPath(transform.position, target, OnPathFound);
         }
-    }
 
-    IEnumerator FollowPass()
-    {
-        Vector3 currentPoint = path[0];
-        while (true)
+        private void OnPathFound(Vector2[] points, bool sucess)
         {
-            if (transform.position == currentPoint)
+            if (sucess)
             {
-                targetIndex++;
-                if (targetIndex >= path.Length)
-                {
-                    yield break;
-                }
-                currentPoint = path[targetIndex];
+                StopCoroutine("FollowPass");
+                path = points;
+                targetIndex = 0;
+                StartCoroutine("FollowPass");
             }
-            transform.position = Vector3.MoveTowards(transform.position, currentPoint, speed * Time.deltaTime);
-            yield return null;
         }
-    }
 
-    private void OnDrawGizmos()
-    {
-        if (path != null)
+        IEnumerator FollowPass()
         {
-            for (int i = targetIndex; i < path.Length; i++)
+            Vector3 currentPoint = path[0];
+            while (true)
             {
-                Gizmos.color = Color.black;
-                Gizmos.DrawCube(path[i], Vector3.one);
-                if (i == targetIndex)
+                if (transform.position == currentPoint)
                 {
-                    Gizmos.DrawLine(transform.position, path[i]);
+                    targetIndex++;
+                    if (targetIndex >= path.Length)
+                    {
+                        yield break;
+                    }
+                    currentPoint = path[targetIndex];
                 }
-                else
+                transform.position = Vector3.MoveTowards(transform.position, currentPoint, speed * Time.deltaTime);
+                yield return null;
+            }
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (path != null)
+            {
+                for (int i = targetIndex; i < path.Length; i++)
                 {
-                    Gizmos.DrawLine(path[i - 1], path[i]);
+                    Gizmos.color = Color.black;
+                    Gizmos.DrawCube(path[i], Vector3.one);
+                    if (i == targetIndex)
+                    {
+                        Gizmos.DrawLine(transform.position, path[i]);
+                    }
+                    else
+                    {
+                        Gizmos.DrawLine(path[i - 1], path[i]);
+                    }
                 }
             }
         }

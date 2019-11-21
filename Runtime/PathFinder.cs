@@ -3,134 +3,141 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 
-public class PathFinder : MonoBehaviour
+namespace PathFinder
 {
-    Grid grid;
-    PathRequestManager requestManager;
 
-    private void Awake()
+    public class PathFinder : MonoBehaviour
     {
-        grid = GetComponent<Grid>();
-        requestManager = GetComponent<PathRequestManager>();
-    }
+        Grid grid;
+        PathRequestManager requestManager;
 
-    public void StartFindPath(Vector2 startPos, Vector2 endPos)
-    {
-        StartCoroutine(FindPath(startPos, endPos));
-    }
-
-    IEnumerator FindPath(Vector2 startPos, Vector2 endPos)
-    {
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-
-        bool passSuccess = false;
-        Node startNode = grid.GetNodeFromWorldPoint(startPos);
-        Node endNode = grid.GetNodeFromWorldPoint(endPos);
-        //TODO create a way for the unit to go as close to the no walkable node as possilbe
-        if (startNode.walkable && endNode.walkable)
+        private void Awake()
         {
-            Heap<Node> openQueue = new Heap<Node>(grid.MaxSize);
-            HashSet<Node> closedSet = new HashSet<Node>();
+            grid = GetComponent<Grid>();
+            requestManager = GetComponent<PathRequestManager>();
+        }
 
-            openQueue.Add(startNode);
+        public void StartFindPath(Vector2 startPos, Vector2 endPos)
+        {
+            StartCoroutine(FindPath(startPos, endPos));
+        }
 
-            while (openQueue.Count > 0)
+        IEnumerator FindPath(Vector2 startPos, Vector2 endPos)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            bool passSuccess = false;
+            Node startNode = grid.GetNodeFromWorldPoint(startPos);
+            Node endNode = grid.GetNodeFromWorldPoint(endPos);
+            //TODO create a way for the unit to go as close to the no walkable node as possilbe
+            if (startNode.walkable && endNode.walkable)
             {
-                Node currentNode = openQueue.RemoveFirst();
-                closedSet.Add(currentNode);
+                Heap<Node> openQueue = new Heap<Node>(grid.MaxSize);
+                HashSet<Node> closedSet = new HashSet<Node>();
 
-                if (currentNode == endNode)
-                {
-                    passSuccess = true;
-                    break;
-                }
+                openQueue.Add(startNode);
 
-                foreach (Node neighbour in grid.GetNeighbours(currentNode))
+                while (openQueue.Count > 0)
                 {
-                    if (!neighbour.walkable || closedSet.Contains(neighbour))
+                    Node currentNode = openQueue.RemoveFirst();
+                    closedSet.Add(currentNode);
+
+                    if (currentNode == endNode)
                     {
-                        continue;
+                        passSuccess = true;
+                        break;
                     }
 
-                    int newCost = currentNode.gCost + GetDistance(currentNode, neighbour);
-                    if (newCost < neighbour.gCost || !openQueue.Contains(neighbour))
+                    foreach (Node neighbour in grid.GetNeighbours(currentNode))
                     {
-                        neighbour.gCost = newCost;
-                        neighbour.hCost = GetDistance(neighbour, endNode);
-                        neighbour.parent = currentNode;
-
-                        if (!openQueue.Contains(neighbour))
+                        if (!neighbour.walkable || closedSet.Contains(neighbour))
                         {
-                            openQueue.Add(neighbour);
-                        } else {
-                            openQueue.UpdateItem(neighbour);
+                            continue;
                         }
+
+                        int newCost = currentNode.gCost + GetDistance(currentNode, neighbour);
+                        if (newCost < neighbour.gCost || !openQueue.Contains(neighbour))
+                        {
+                            neighbour.gCost = newCost;
+                            neighbour.hCost = GetDistance(neighbour, endNode);
+                            neighbour.parent = currentNode;
+
+                            if (!openQueue.Contains(neighbour))
+                            {
+                                openQueue.Add(neighbour);
+                            }
+                            else
+                            {
+                                openQueue.UpdateItem(neighbour);
+                            }
+                        }
+
                     }
-
+                    closedSet.Add(currentNode);
                 }
-                closedSet.Add(currentNode);
             }
-        }
-        yield return null;
-        sw.Stop();
-        if (passSuccess)
-        {
-            UnityEngine.Debug.Log("Path found " + sw.ElapsedMilliseconds + " ms");
-            var points = RetracePath(startNode, endNode);
-            requestManager.FinishProcessingPath(points, true);
-        }
-        else
-        {
-            UnityEngine.Debug.Log("Path not found " + sw.ElapsedMilliseconds + " ms");
-            //TODO improve API
-            requestManager.FinishProcessingPath(new Vector2[0], false);
-        }
-
-    }
-
-    Vector2[] RetracePath(Node startNode, Node endNode)
-    {
-        List<Node> path = new List<Node>();
-        Node currentNode = endNode;
-        while (currentNode != startNode)
-        {
-            path.Add(currentNode);
-            currentNode = currentNode.parent;
-        }
-        var waypoints = SimplifyPath(path);
-        waypoints.Reverse();
-        return waypoints.ToArray();
-    }
-
-    List<Vector2> SimplifyPath(List<Node> path)
-    {
-        List<Vector2> waypoints = new List<Vector2>();
-        Vector2 directionOld = Vector2.zero;
-        for (int i = 1; i < path.Count; i++)
-        {
-            Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
-            if (directionNew != directionOld)
+            yield return null;
+            sw.Stop();
+            if (passSuccess)
             {
-                waypoints.Add(path[i].position);
+                UnityEngine.Debug.Log("Path found " + sw.ElapsedMilliseconds + " ms");
+                var points = RetracePath(startNode, endNode);
+                requestManager.FinishProcessingPath(points, true);
             }
-            directionOld = directionNew;
+            else
+            {
+                UnityEngine.Debug.Log("Path not found " + sw.ElapsedMilliseconds + " ms");
+                //TODO improve API
+                requestManager.FinishProcessingPath(new Vector2[0], false);
+            }
+
         }
-        return waypoints;
+
+        Vector2[] RetracePath(Node startNode, Node endNode)
+        {
+            List<Node> path = new List<Node>();
+            Node currentNode = endNode;
+            while (currentNode != startNode)
+            {
+                path.Add(currentNode);
+                currentNode = currentNode.parent;
+            }
+            var waypoints = SimplifyPath(path);
+            waypoints.Reverse();
+            return waypoints.ToArray();
+        }
+
+        List<Vector2> SimplifyPath(List<Node> path)
+        {
+            List<Vector2> waypoints = new List<Vector2>();
+            Vector2 directionOld = Vector2.zero;
+            for (int i = 1; i < path.Count; i++)
+            {
+                Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
+                if (directionNew != directionOld)
+                {
+                    waypoints.Add(path[i].position);
+                }
+                directionOld = directionNew;
+            }
+            return waypoints;
+        }
+
+        int GetDistance(Node nodeA, Node nodeB)
+        {
+            int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
+            int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
+
+            if (dstX > dstY)
+            {
+                return 14 * dstY + 10 * (dstX - dstY);
+            }
+            else
+            {
+                return 14 * dstX + 10 * (dstY - dstX);
+            }
+        }
     }
 
-    int GetDistance(Node nodeA, Node nodeB)
-    {
-        int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
-        int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
-
-        if (dstX > dstY)
-        {
-            return 14 * dstY + 10 * (dstX - dstY);
-        }
-        else
-        {
-            return 14 * dstX + 10 * (dstY - dstX);
-        }
-    }
 }
