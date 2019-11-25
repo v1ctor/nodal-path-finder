@@ -2,7 +2,6 @@
 
 namespace PathFinder
 {
-
     public class Player : PathFollower
     {
         private void Update()

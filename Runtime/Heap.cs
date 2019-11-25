@@ -3,11 +3,9 @@
 namespace PathFinder
 {
 
-
     // TODO this is the bad heap implementation, I need to rewrite it to be dynamic
     public class Heap<T> where T : IHeapItem<T>
     {
-
         T[] items;
         int currentItemCount;
 

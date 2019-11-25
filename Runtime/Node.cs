@@ -2,8 +2,6 @@
 
 namespace PathFinder
 {
-
-
     public class Node : IHeapItem<Node>
     {
         public bool walkable;

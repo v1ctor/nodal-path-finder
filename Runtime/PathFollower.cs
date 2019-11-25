@@ -9,6 +9,7 @@ namespace PathFinder
         public float speed = 5f;
         Vector2[] path;
         int targetIndex;
+        protected Vector3 direction;
 
         protected void RequestPath(Vector2 target)
         {
@@ -28,7 +29,13 @@ namespace PathFinder
 
         IEnumerator FollowPass()
         {
+            if (path.Length == 0)
+            {
+                yield return null;
+            }
             Vector3 currentPoint = path[0];
+            direction = currentPoint - transform.position;
+            direction.Normalize();
             while (true)
             {
                 if (transform.position == currentPoint)
@@ -36,9 +43,12 @@ namespace PathFinder
                     targetIndex++;
                     if (targetIndex >= path.Length)
                     {
+                        direction = Vector3.zero;
                         yield break;
                     }
                     currentPoint = path[targetIndex];
+                    direction = currentPoint - transform.position;
+                    direction.Normalize();
                 }
                 transform.position = Vector3.MoveTowards(transform.position, currentPoint, speed * Time.deltaTime);
                 yield return null;
