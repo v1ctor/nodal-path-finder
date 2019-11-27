@@ -29,29 +29,28 @@ namespace PathFinder
 
         IEnumerator FollowPass()
         {
-            if (path.Length == 0)
+            if (path.Length != 0)
             {
-                yield return null;
-            }
-            Vector3 currentPoint = path[0];
-            direction = currentPoint - transform.position;
-            direction.Normalize();
-            while (true)
-            {
-                if (transform.position == currentPoint)
+                Vector3 currentPoint = path[0];
+                direction = currentPoint - transform.position;
+                direction.Normalize();
+                while (true)
                 {
-                    targetIndex++;
-                    if (targetIndex >= path.Length)
+                    if (transform.position == currentPoint)
                     {
-                        direction = Vector3.zero;
-                        yield break;
+                        targetIndex++;
+                        if (targetIndex >= path.Length)
+                        {
+                            direction = Vector3.zero;
+                            yield break;
+                        }
+                        currentPoint = path[targetIndex];
+                        direction = currentPoint - transform.position;
+                        direction.Normalize();
                     }
-                    currentPoint = path[targetIndex];
-                    direction = currentPoint - transform.position;
-                    direction.Normalize();
+                    transform.position = Vector3.MoveTowards(transform.position, currentPoint, speed * Time.deltaTime);
+                    yield return null;
                 }
-                transform.position = Vector3.MoveTowards(transform.position, currentPoint, speed * Time.deltaTime);
-                yield return null;
             }
         }
 
