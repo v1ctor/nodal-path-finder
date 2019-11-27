@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace PathFinder
 {
-
     public class Grid : MonoBehaviour
     {
         public LayerMask unwalkableMask;
@@ -56,8 +55,8 @@ namespace PathFinder
             percentX = Mathf.Clamp01(percentX);
             percentY = Mathf.Clamp01(percentY);
 
-            int x = Mathf.RoundToInt((gridSizeX - 1) * percentX);
-            int y = Mathf.RoundToInt((gridSizeY - 1) * percentY);
+            int x = Mathf.CeilToInt((gridSizeX - 1) * percentX);
+            int y = Mathf.CeilToInt((gridSizeY - 1) * percentY);
             return grid[x, y];
         }
 
